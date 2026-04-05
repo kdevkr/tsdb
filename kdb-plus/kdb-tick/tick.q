@@ -9,10 +9,13 @@
 / q tick.q sym . -p 5001 </dev/null >foo 2>&1 &
 "kdb+tick 2.8 2014.03.12"
 
+\l tick/env.q
+
 /q tick.q SRC [DST] [-p 5010] [-o h]
 system"l tick/",(src:first .z.x,enlist"sym"),".q"
 
-if[not system"p";system"p 5010"]
+/ 포트 설정 (인자 -p 우선, 없으면 .env TP_PORT 기반)
+if[not system"p"; system"p ",string $[null TP_PORT; 5010; TP_PORT]]
 
 \l tick/u.q
 \d .u
@@ -52,7 +55,7 @@ printSchemas:{
   };
 
 / TP 로그 파일을 보관할 일수 (0 설정 시 자동 삭제 비활성화)
-retention:7;
+retention:$[null TP_RETENTION; 7; TP_RETENTION];
 
 / .u.retention 일보다 오래된 TP 로그 파일 삭제 로직
 cleanLogs:{

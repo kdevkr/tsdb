@@ -8,10 +8,13 @@
 
 if[not "w"=first string .z.o;system "sleep 1"];
 
-upd:insert;
+\l tick/env.q
 
-/ TickerPlant 및 HDB 포트 설정 (기본값: 5010, ".")
-.u.x:.z.x,(count .z.x)_(":5010";".");
+/ TickerPlant 및 HDB 포트 설정 (기본값: TP_ADDR, HDB_DIR)
+.u.x:.z.x,(count .z.x)_($[null TP_ADDR; ":5010"; TP_ADDR]; $[null HDB_DIR; "."; HDB_DIR]);
+
+/ 포트 설정 (인자 -p 우선, 없으면 .env RDB_PORT 기반)
+if[not system "p"; system "p ",string $[null RDB_PORT; 5011; RDB_PORT]];
 
 / EOD(End of Day) 처리: 저장, 메모리 초기화, HDB 리로드 신호
 .u.end:{[x]

@@ -6,12 +6,13 @@
 
 / q tick/rts.q [host]:port[:usr:pwd] [host]:port[:usr:pwd]
 
-if[not "w"=first string .z.o;system "sleep 1"];
+\l tick/env.q
 
-upd:insert;
+/ TickerPlant 및 HDB 포트 설정 (기본값: TP_ADDR, HDB_PORT)
+.u.x:.z.x,(count .z.x)_($[null TP_ADDR; ":5010"; TP_ADDR]; $[null HDB_PORT; ":5012"; string HDB_PORT]);
 
-/ TickerPlant 및 HDB 포트 설정 (기본값: 5010, 5012)
-.u.x:.z.x,(count .z.x)_(":5010";":5012");
+/ 포트 설정 (인자 -p 우선, 없으면 .env RTS_PORT 기반)
+if[not system "p"; system "p ",string $[null RTS_PORT; 5013; RTS_PORT]];
 
 / EOD(End of Day) 처리: 메모리 초기화 (HDB 저장은 하지 않음)
 .u.end:{[x]

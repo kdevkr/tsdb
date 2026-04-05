@@ -4,20 +4,19 @@
 / 3. 쿼리 모니터링: 모든 조회 쿼리의 수행 시간(ms)과 사용자 정보를 트래킹하여 로그 기록
 / 4. 자원 보호: 무거운 쿼리 차단을 위해 30초 타임아웃(system "T 30") 기본 설정
 
-/ 사용법: q h.q [HDB_경로] [-p 5012]
+\l tick/env.q
 
-/ 커맨드 라인 인자로부터 파티션된 데이터 경로 추출
+/ 커맨드 라인 인자로부터 파티션된 데이터 경로 추출 (없으면 .env HDB_DIR 사용)
 args:.z.x where not .z.x like "-*";
-hdbDir:$[count args; last args; "."];
+hdbDir:$[count args; last args; $[null HDB_DIR; "."; HDB_DIR]];
 -1 (string .z.P)," [INFO] Loading HDB from: ",hdbDir;
 
 / 원시 경로 문자열을 사용하여 데이터베이스 로딩 시도
 system "l ",hdbDir;
 
-/ 포트가 지정되지 않은 경우 기본 포트 설정
+/ 포트 설정 (인자 -p 우선, 없으면 .env HDB_PORT 기반)
 if[not system "p"; 
-  -1 (string .z.P)," [INFO] No port specified, defaulting to 5012";
-  system "p 5012";
+  system "p ",string $[null HDB_PORT; 5012; HDB_PORT];
  ];
 
 -1 (string .z.P)," [INFO] HDB process ready and serving at port ",string system"p";
@@ -30,8 +29,8 @@ if[not system "p";
   -1 (string .z.P)," [INFO] HDB reload complete.";
  };
 
-/ 2. 자원 관리: 블로킹 방지를 위한 기본 쿼리 타임아웃(30초) 설정
-system "T 30";
+/ 2. 자원 관리: 블로킹 방지를 위한 기본 쿼리 타임아웃 설정
+system "T ",string $[null QUERY_TIMEOUT; 30; QUERY_TIMEOUT];
 
 / 3. 성능 및 감사 로깅: 누가 어떤 쿼리를 수행하는지 모니터링
 / 동기 쿼리 로깅

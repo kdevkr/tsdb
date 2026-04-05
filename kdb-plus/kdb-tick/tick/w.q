@@ -4,13 +4,16 @@
 / 3. 데이터 영속성: RDB가 EOD에 저장하기 전에 장애가 나더라도, w.q를 통해 디스크에 이미 기록된 데이터는 보호됨
 / 4. 심볼 열거: .Q.en을 사용하여 HDB의 전역 sym 파일과 정합성을 유지하며 적재
 
-/ q tick/w.q [TP_ADDR] [HDB_DIR] -p 5015
+\l tick/env.q
 
 / 설정
-.u.x:.z.x,(count .z.x)_(":5010";".");
+.u.x:.z.x,(count .z.x)_($[null TP_ADDR; ":5010"; TP_ADDR]; $[null HDB_DIR; "."; HDB_DIR]);
 hdbPath:hsym `$.u.x 1;
-hdbAddr:":5012"; / 리로딩을 위한 HDB 프로세스 주소
+hdbAddr:$[null HDB_ADDR; ":5012"; HDB_ADDR]; / 리로딩을 위한 HDB 프로세스 주소
 hH:0; / HDB용 핸들
+
+/ 포트 설정 (인자 -p 우선, 없으면 .env WDB_PORT 기반)
+if[not system "p"; system "p ",string $[null WDB_PORT; 5015; WDB_PORT]];
 
 / 보조 함수: 리로딩을 위해 HDB에 연결
 .w.connHDB:{ hH::@[hopen;`$hdbAddr;{0}]; };
@@ -63,8 +66,8 @@ upd:{[t;x]
   -1 (string .z.P)," [WDB] Scheduled flush and HDB reload complete.";
  };
 
-/ 벌크 쓰기를 위한 타이머 설정 (예: 60초)
-system "t 60000";
+/ 벌크 쓰기를 위한 타이머 설정
+system "t ",string $[null WDB_FLUSH_INTERVAL; 60000; WDB_FLUSH_INTERVAL];
 .z.ts:{
   .w.flush[]; / 스케줄링된 디스크 쓰기
   if[h=0; .u.conn[]]; / 타이머가 이미 사용 중인지 재연결 로직 확인
