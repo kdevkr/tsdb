@@ -1,1 +1,4 @@
 kdb-plus/kdb-tick/sym/
+
+influxdb/data
+influxdb/config

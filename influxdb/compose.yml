@@ -1,0 +1,34 @@
+services:
+  # https://docs.influxdata.com/influxdb3/core/
+  influxdb:
+    image: influxdb:3-core
+    container_name: influxdb
+    ports:
+      - "8086:8181" # 호스트 8086 -> 컨테이너 8181
+    volumes:
+      - ./data:/var/lib/influxdb
+      - ./config:/etc/influxdb
+    environment:
+      - INFLUXDB3_NODE_IDENTIFIER_PREFIX=1
+      - INFLUXDB3_OBJECT_STORE=file
+      - INFLUXDB3_DB_DIR=/var/lib/influxdb
+      - INFLUXDB3_ADMIN_TOKEN_FILE=/etc/influxdb/admin-token.json
+    restart: unless-stopped
+
+  # https://docs.influxdata.com/influxdb3/explorer/
+  influxdb3-explorer:
+    image: influxdata/influxdb3-ui:latest
+    container_name: influxdb3-explorer
+    ports:
+      - "8888:80" # UI 접속 포트
+      - "8889:8888" # 추가 관리 포트
+    environment:
+      - DEFAULT_INFLUX_SERVER=http://host.docker.internal:8181
+    command: ["--mode=admin"]
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+networks:
+  default:
+    name: tsdb-network
