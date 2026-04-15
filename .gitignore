@@ -2,3 +2,8 @@ kdb-plus/kdb-tick/sym/
 
 influxdb/data
 influxdb/config
+.env
+
+# Java/Gradle
+influxdb/client_java/build/
+influxdb/client_java/.gradle/

@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.influxdb:influxdb3-java:1.1.0'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+    
+    // 로깅을 위한 slf4j 추가 (선택 사항이나 권장됨)
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+application {
+    mainClass = 'org.example.Main'
+    applicationDefaultJvmArgs = ["--add-opens=java.base/java.nio=ALL-UNNAMED"]
+}
+
+test {
+    useJUnitPlatform()
+}

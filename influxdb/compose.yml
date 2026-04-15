@@ -13,6 +13,7 @@ services:
       - INFLUXDB3_OBJECT_STORE=file
       - INFLUXDB3_DB_DIR=/var/lib/influxdb
       - INFLUXDB3_ADMIN_TOKEN_FILE=/etc/influxdb/admin-token.json
+      - INFLUXDB3_AUTH_TOKEN=apiv3_StbtJg5aLdow7GVJith74r3JkaM33rybXnGa73H1ILusomLvsfRp9rAwEqla5MRQVYJN4B1jw9oI3TdKn5UjpA # For use influxdb3
     restart: unless-stopped
 
   # https://docs.influxdata.com/influxdb3/explorer/
