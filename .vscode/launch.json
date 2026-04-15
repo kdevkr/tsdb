@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug: Main (InfluxDB v3)",
+            "request": "launch",
+            "mainClass": "org.example.Main",
+            "projectName": "client_java",
+            "vmArgs": "--add-opens=java.base/java.nio=ALL-UNNAMED"
+        }
+    ]
+}

@@ -48,6 +48,14 @@ weather,city=Seoul temp=15.76,humidity=51 1712891427454286845
 - **Fields**: `temp=15.76`, `humidity=51` (필수 사항)
 - **Timestamp**: `1712891427454286845` (나노초 정밀도, 19자리)
 
+### ☕ Java 클라이언트
+- [InfluxDB v3 Java Client](https://docs.influxdata.com/influxdb3/core/reference/client-libraries/v3/java/)
+
+> [!IMPORTANT]
+> 이 클라이언트는 **Java 11 이상**을 요구하며, **Java 25**까지 호환됩니다.
+> 실행 시 다음 JVM 인자가 필수적으로 필요합니다:
+> - 모든 버전: `--add-opens=java.base/java.nio=ALL-UNNAMED`
+> - **Java 25 이상**: `--sun-misc-unsafe-memory-access=allow` 추가 필수
 
 ## 주의사항
 

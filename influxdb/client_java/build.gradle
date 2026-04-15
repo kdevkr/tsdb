@@ -11,9 +11,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.influxdb:influxdb3-java:1.1.0'
+    implementation 'com.influxdb:influxdb3-java:1.8.0'
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
     
+    // Lombok
+    implementation 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
     // 로깅을 위한 slf4j 추가 (선택 사항이나 권장됨)
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -21,7 +25,10 @@ dependencies {
 
 application {
     mainClass = 'org.example.Main'
-    applicationDefaultJvmArgs = ["--add-opens=java.base/java.nio=ALL-UNNAMED"]
+    applicationDefaultJvmArgs = [
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--sun-misc-unsafe-memory-access=allow"
+    ]
 }
 
 test {

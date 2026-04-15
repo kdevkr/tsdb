@@ -49,6 +49,22 @@ weather,city=Seoul temp=15.76,humidity=51 1712891427454286845
 - **Timestamp**: `1712891427454286845` (Nanosecond precision, 19 digits)
 
 
+### ☕ Java Client
+- [InfluxDB v3 Java Client](https://docs.influxdata.com/influxdb3/core/reference/client-libraries/v3/java/)
+
+> [!IMPORTANT]
+> This client requires **Java 11 or later** and is compatible up to **Java 25**.
+> The following JVM arguments are required at runtime:
+> - All versions: `--add-opens=java.base/java.nio=ALL-UNNAMED`
+> - **Java 25 or later**: `--sun-misc-unsafe-memory-access=allow` is also required.
+
+#### 🚀 Getting Started (Gradle)
+```gradle
+dependencies {
+    implementation 'com.influxdb:influxdb3-java:1.8.0'
+}
+```
+
 ## Considerations
 
 - Partial deletion of data is not supported
