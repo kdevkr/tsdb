@@ -6,14 +6,17 @@
 \l tick/env.q
 
 / 설정: 대상 프로세스 주소
-rtsAddr:$[null RTS_ADDR; ":5013"; RTS_ADDR]; / 실시간 서비스 (메모리 쿼리)
-hdbAddr:$[null HDB_ADDR; ":5012"; HDB_ADDR]; / 과거 데이터베이스 (디스크 쿼리)
+rtsAddr:$[`RTS_ADDR in key `.; .RTS_ADDR; ":5013"]; / 실시간 서비스 (메모리 쿼리)
+hdbAddr:$[`HDB_ADDR in key `.; .HDB_ADDR; ":5012"]; / 과거 데이터베이스 (디스크 쿼리)
 
 / 핸들 관리
 rtsH:0; hdbH:0;
 
 / 포트 설정 (인자 -p 우선, 없으면 .env GW_PORT 기반)
-if[not system "p"; system "p ",string $[null GW_PORT; 5014; GW_PORT]];
+if[not system "p"; 
+  pVal:$[`GW_PORT in key `.; .GW_PORT; 5014];
+  system "p ",string pVal
+ ];
 
 / 연결 로직
 .gw.conn:{

@@ -8,15 +8,30 @@
 
 / 커맨드 라인 인자로부터 파티션된 데이터 경로 추출 (없으면 .env HDB_DIR 사용)
 args:.z.x where not .z.x like "-*";
-hdbDir:$[count args; last args; $[null HDB_DIR; "."; HDB_DIR]];
--1 (string .z.P)," [INFO] Loading HDB from: ",hdbDir;
+hdbVal:$[`HDB_DIR in key `.; .HDB_DIR; "./hdb"];
+hdbPath:$[count args; last args; hdbVal];
 
-/ 원시 경로 문자열을 사용하여 데이터베이스 로딩 시도
-system "l ",hdbDir;
+/ 경로가 존재하는지 확인 (없으면 경고 후 대기)
+if[null key hsym `$hdbPath;
+  -1 (string .z.P)," [WARN] HDB directory [",hdbPath,"] is missing. Waiting for first end-of-day save...";
+ ];
+if[not null key hsym `$hdbPath;
+  -1 (string .z.P)," [INFO] Loading HDB from: ",hdbPath;
+ ];
+
+/ 원시 경로 문자열을 사용하여 데이터베이스 로딩 시도 (sym 파일이 있을 경우에만 실행하여 .env 파일 충돌 방지)
+if[not null key (hsym `$hdbPath),`sym;
+  -1 (string .z.P)," [INFO] 'sym' file found. Initializing HDB load...";
+  system "l ",1_ string hsym `$hdbPath;
+ ];
+if[null key (hsym `$hdbPath),`sym;
+  -1 (string .z.P)," [WARN] No 'sym' file found in ",hdbPath,". HDB initialization skipped.";
+ ];
 
 / 포트 설정 (인자 -p 우선, 없으면 .env HDB_PORT 기반)
 if[not system "p"; 
-  system "p ",string $[null HDB_PORT; 5012; HDB_PORT];
+  pVal:$[`HDB_PORT in key `.; .HDB_PORT; 5012];
+  system "p ",string pVal
  ];
 
 -1 (string .z.P)," [INFO] HDB process ready and serving at port ",string system"p";
@@ -25,12 +40,13 @@ if[not system "p";
 / 1. EOD 동기화를 위한 리로드 함수: RDB/TP가 HDB 새로고침을 트리거할 때 사용
 .u.reload:{
   -1 (string .z.P)," [INFO] Reloading HDB to catch new partitions...";
-  system "l ",hdbDir;
+  system "l ",hdbPath; / hdbPath 변수 사용 (hdbDir 대체)
   -1 (string .z.P)," [INFO] HDB reload complete.";
  };
 
 / 2. 자원 관리: 블로킹 방지를 위한 기본 쿼리 타임아웃 설정
-system "T ",string $[null QUERY_TIMEOUT; 30; QUERY_TIMEOUT];
+tVal:$[`QUERY_TIMEOUT in key `.; .QUERY_TIMEOUT; 30];
+system "T ",string tVal;
 
 / 3. 성능 및 감사 로깅: 누가 어떤 쿼리를 수행하는지 모니터링
 / 동기 쿼리 로깅

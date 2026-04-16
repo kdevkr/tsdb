@@ -9,10 +9,15 @@
 \l tick/env.q
 
 / TickerPlant 및 HDB 포트 설정 (기본값: TP_ADDR, HDB_PORT)
-.u.x:.z.x,(count .z.x)_($[null TP_ADDR; ":5010"; TP_ADDR]; $[null HDB_PORT; ":5012"; string HDB_PORT]);
+tpAddr:$[`TP_ADDR in key `.; .TP_ADDR; ":5010"];
+hdbPort:$[`HDB_PORT in key `.; string .HDB_PORT; "5012"];
+.u.x:.z.x,(count .z.x)_(tpAddr; ":",hdbPort);
 
 / 포트 설정 (인자 -p 우선, 없으면 .env RTS_PORT 기반)
-if[not system "p"; system "p ",string $[null RTS_PORT; 5013; RTS_PORT]];
+if[not system "p"; 
+  pVal:$[`RTS_PORT in key `.; .RTS_PORT; 5013];
+  system "p ",string pVal
+ ];
 
 / EOD(End of Day) 처리: 메모리 초기화 (HDB 저장은 하지 않음)
 .u.end:{[x]

@@ -6,8 +6,7 @@
 
 / https://github.com/KxSystems/kdb-tick/blob/master/tick.q
 
-/ q tick.q sym . -p 5001 </dev/null >foo 2>&1 &
-"kdb+tick 2.8 2014.03.12"
+/ q tick.q sym . -p 5010 </dev/null >foo 2>&1 &
 
 \l tick/env.q
 
@@ -15,12 +14,15 @@
 system"l tick/",(src:first .z.x,enlist"sym"),".q"
 
 / 포트 설정 (인자 -p 우선, 없으면 .env TP_PORT 기반)
-if[not system"p"; system"p ",string $[null TP_PORT; 5010; TP_PORT]]
+if[not system"p"; 
+  pVal:$[`TP_PORT in key `.; .TP_PORT; 5010];
+  system "p ",string pVal
+ ]
 
 \l tick/u.q
 \d .u
 ld:{if[not type key L::`$(-10_string L),string x;.[L;();:;()]];i::j::-11!(-2;L);if[0<=type i;-2 (string L)," is a corrupt log. Truncate to length ",(string last i)," and restart";exit 1];hopen L};
-tick:{init[];if[not min(`time`sym~2#key flip value@)each t;'`timesym];@[;`sym;`g#]each t;d::.z.D;i::j::0;L::`$":",($[count y;y;"."]),"/",x,10#".";l::ld d;printSchemas[]};
+tick:{init[];if[not min(`time`sym~2#key flip value@)each t;'`timesym];@[;`sym;`g#]each t;d::.z.D;i::j::0;L::`$":",($[count y;y;"."]),"/",x,10#".";-1 (string .z.P)," [INFO] TickerPlant Log Path: ",string L;l::ld d;printSchemas[]};
 
 / 등록된 모든 TP 테이블의 스키마(컬럼, 타입, 속성) 출력
 printSchemas:{
@@ -55,7 +57,7 @@ printSchemas:{
   };
 
 / TP 로그 파일을 보관할 일수 (0 설정 시 자동 삭제 비활성화)
-retention:$[null TP_RETENTION; 7; TP_RETENTION];
+retention:$[`TP_RETENTION in key `.; .TP_RETENTION; 7];
 
 / .u.retention 일보다 오래된 TP 로그 파일 삭제 로직
 cleanLogs:{

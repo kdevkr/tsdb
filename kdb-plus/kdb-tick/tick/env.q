@@ -19,15 +19,15 @@
   
   {
     k:`$first x;
-    v:1_ "=" sv 1_ x; / 값에 =가 포함되어 있을 경우를 대비한 병합
+    v:"=" sv 1_ x; / 값에 =가 포함되어 있을 경우를 대비한 병합
     
     / 숫자로 변환 가능한지 체크
     nv:@[{"I"$x};v;{0N}];
     
-    / 전역 네임스페이스에 변수 설정 (숫자면 정수형, 아니면 문자열)
-    set[k; $[not null nv; nv; v]];
+    / 전역 네임스페이스(.)에 변수 강제 설정
+    set[`.Q.dd[`.`;k]; $[not null nv; nv; v]];
     
-    -1 (string .z.P)," [ENV] Config set: ",(string k),"=",$[not null nv; string nv; v];
+    -1 (string .z.P)," [ENV] Config set: ",(string k),"=", $[not null nv; string nv; v];
   } each kv;
  };
 

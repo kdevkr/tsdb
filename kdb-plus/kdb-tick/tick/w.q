@@ -7,13 +7,18 @@
 \l tick/env.q
 
 / 설정
-.u.x:.z.x,(count .z.x)_($[null TP_ADDR; ":5010"; TP_ADDR]; $[null HDB_DIR; "."; HDB_DIR]);
+tpAddr:$[`TP_ADDR in key `.; .TP_ADDR; ":5010"];
+hdbDir:$[`HDB_DIR in key `.; .HDB_DIR; "."];
+.u.x:.z.x,(count .z.x)_(tpAddr; hdbDir);
 hdbPath:hsym `$.u.x 1;
-hdbAddr:$[null HDB_ADDR; ":5012"; HDB_ADDR]; / 리로딩을 위한 HDB 프로세스 주소
+hdbAddr:$[`HDB_ADDR in key `.; .HDB_ADDR; ":5012"]; / 리로딩을 위한 HDB 프로세스 주소
 hH:0; / HDB용 핸들
 
 / 포트 설정 (인자 -p 우선, 없으면 .env WDB_PORT 기반)
-if[not system "p"; system "p ",string $[null WDB_PORT; 5015; WDB_PORT]];
+if[not system "p"; 
+  pVal:$[`WDB_PORT in key `.; .WDB_PORT; 5015];
+  system "p ",string pVal
+ ];
 
 / 보조 함수: 리로딩을 위해 HDB에 연결
 .w.connHDB:{ hH::@[hopen;`$hdbAddr;{0}]; };
@@ -67,7 +72,7 @@ upd:{[t;x]
  };
 
 / 벌크 쓰기를 위한 타이머 설정
-system "t ",string $[null WDB_FLUSH_INTERVAL; 60000; WDB_FLUSH_INTERVAL];
+system "t ",string $[`WDB_FLUSH_INTERVAL in key `.; .WDB_FLUSH_INTERVAL; 60000];
 .z.ts:{
   .w.flush[]; / 스케줄링된 디스크 쓰기
   if[h=0; .u.conn[]]; / 타이머가 이미 사용 중인지 재연결 로직 확인
